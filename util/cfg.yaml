@@ -1,0 +1,21 @@
+ServerName: edge-user-go
+RuntimeEnv: local
+
+
+EtcdHosts:
+  -  150.158.133.213:2379
+
+RpcServer:
+  Name: edge-user-go
+  ListenOn: 0.0.0.0:9800
+  Etcd:
+    Key: grpc.edge-user-go
+
+
+Log:
+  level: -1
+  development: true
+  disableStacktrace: false
+
+
+

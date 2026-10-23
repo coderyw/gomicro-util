@@ -1,0 +1,160 @@
+// Package json
+// @Author: yinwei
+// @File: decode_model_test
+// @Version: 1.0.0
+// @Date: 2025/4/27 13:29
+
+package json
+
+import (
+	"github.com/coderyw/gomicro-util/library/log"
+	"github.com/coderyw/gomicro-util/util/ptr"
+	"go.uber.org/zap"
+	"testing"
+)
+
+var testModel = TestAll{
+	IntField:           123,
+	IntPtrField:        ptr.IntegerPtr[int, int](1),
+	IntStrField:        0,
+	IntStrPtrField:     nil,
+	IntPtrNilField:     nil,
+	Int8Field:          0,
+	Int8PtrField:       nil,
+	Int8StrField:       0,
+	Int8StrPtrField:    nil,
+	Int8PtrNilField:    nil,
+	Int16Field:         0,
+	Int16PtrField:      nil,
+	Int16StrField:      0,
+	Int16StrPtrField:   nil,
+	Int16PtrNilField:   nil,
+	Int32Field:         0,
+	Int32PtrField:      nil,
+	Int32StrField:      0,
+	Int32StrPtrField:   nil,
+	Int32PtrNilField:   nil,
+	Int64Field:         0,
+	Int64PtrField:      nil,
+	Int64StrField:      0,
+	Int64StrPtrField:   nil,
+	Int64PtrNilField:   nil,
+	UintField:          0,
+	UintPtrField:       nil,
+	UintStrField:       0,
+	UintStrPtrField:    nil,
+	UintPtrNilField:    nil,
+	Uint8Field:         0,
+	Uint8PtrField:      nil,
+	Uint8StrField:      0,
+	Uint8StrPtrField:   nil,
+	Uint8PtrNilField:   nil,
+	Uint16Field:        0,
+	Uint16PtrField:     nil,
+	Uint16StrField:     0,
+	Uint16StrPtrField:  nil,
+	Uint16PtrNilField:  nil,
+	Uint32Field:        0,
+	Uint32PtrField:     nil,
+	Uint32StrField:     0,
+	Uint32StrPtrField:  nil,
+	Uint32PtrNilField:  nil,
+	Uint64Field:        0,
+	Uint64PtrField:     nil,
+	Uint64StrField:     0,
+	Uint64StrPtrField:  nil,
+	Uint64PtrNilField:  nil,
+	Float64Field:       0,
+	Float64PtrField:    nil,
+	Float64StrField:    0,
+	Float64StrPtrField: nil,
+	Float64PtrNilField: nil,
+	Float32Field:       0,
+	Float32PtrField:    nil,
+	Float32StrField:    0,
+	Float32StrPtrField: nil,
+	Float32PtrNilField: nil,
+	StringField:        "",
+	StringPtrField:     nil,
+	StringStrField:     "",
+	StringStrPtrField:  nil,
+	StringPtrNilField:  nil,
+}
+
+var testModelStr = `
+{
+	"int_field": 1,
+	"int_ptr_field": 2,
+	"int_str_field": "3",
+	"int_str_ptr_field": "4",
+	"int_ptr_nil_field": null,
+	"int8_field": 11,
+	"int8_ptr_field": 12,
+	"int8_str_field": "13",
+	"int8_str_ptr_field": "14",
+	"int8_ptr_nil_field": null,
+	"int16_field": 21,
+	"int16_ptr_field": 22,
+	"int16_str_field": "23",
+	"int16_str_ptr_field": "24",
+	"int16_ptr_nil_field": null,
+	"int32_field": 31,
+	"int32_ptr_field": 32,
+	"int32_str_field": "33",
+	"int32_str_ptr_field": "34",
+	"int32_ptr_nil_field": null,
+	"int64_field": 41,
+	"int64_ptr_field": 42,
+	"int64_str_field": "43",
+	"int64_str_ptr_field": "44",
+	"int64_ptr_nil_field": null,
+	"uint_field": 51,
+	"uint_ptr_field": 52,
+	"uint_str_field": "53",
+	"uint_str_ptr_field": "54",
+	"uint_ptr_nil_field": null,
+	"uint8_field": 61,
+	"uint8_ptr_field": 62,
+	"uint8_str_field": "63",
+	"uint8_str_ptr_field": "64",
+	"uint8_ptr_nil_field": null,
+	"uint16_field": 71,
+	"uint16_ptr_field": 72,
+	"uint16_str_field": "73",
+	"uint16_str_ptr_field": "74",
+	"uint16_ptr_nil_field": null,
+	"uint32_field": 81,
+	"uint32_ptr_field": 82,
+	"uint32_str_field": "83",
+	"uint32_str_ptr_field": "84",
+	"uint32_ptr_nil_field": null,
+	"uint64_field": 91,
+	"uint64_ptr_field": 92,
+	"uint64_str_field": "93",
+	"uint64_str_ptr_field": "94",
+	"uint64_ptr_nil_field": null,
+	"float64_field": 0.1,
+	"float64_ptr_field": 0.2,
+	"float64_str_field": "0.3",
+	"float64_str_ptr_field": "0.4",
+	"float64_ptr_nil_field": null,
+	"float32_field": 0.11,
+	"float32_ptr_field": 0.12,
+	"float32_str_field": "0.13",
+	"float32_str_ptr_field": "0.14",
+	"float32_ptr_nil_field": null,
+	"string_field": "str1",
+	"string_ptr_field": "str2",
+	"string_str_field": "str3",
+	"string_str_ptr_field": "str4",
+	"string_ptr_nil_field": null
+}
+`
+
+func TestModel(t *testing.T) {
+	err := json.Unmarshal([]byte(testModelStr), &testModel)
+	if err != nil {
+		t.Error(err)
+	}
+	log.Info("msg", zap.Any("model", testModel))
+}

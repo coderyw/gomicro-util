@@ -1,0 +1,46 @@
+/**
+ * @Author: yinwei
+ * @Description:
+ * @File: key
+ * @Version: 1.0.0
+ * @Date: 2023/10/26 09:49
+ */
+package etcd
+
+import (
+	"fmt"
+	"github.com/coderyw/gomicro-util/library/env"
+	"github.com/coderyw/gomicro-util/model/cst"
+)
+
+var (
+	// 定时器配置
+	TIMER_SCHEDULE_KEY = "/%v/config/%v/timer"
+)
+
+// 获取mysql配置key
+func GetMysqlConfigKey(serverName string) string {
+	return fmt.Sprintf("/%s/config/%s/%s", env.GetEnv(), cst.ETCD_MYSQL_kEY, serverName)
+}
+
+// 获取redis配置key
+// 可忽略serverName
+func GetRedisConfigKey(serverName ...string) string {
+	if len(serverName) > 0 {
+		return fmt.Sprintf("/%s/config/%s/%s", env.GetEnv(), cst.ETCD_REDIS_KEY, serverName[0])
+	} else {
+		return fmt.Sprintf("/%s/config/%s", env.GetEnv(), cst.ETCD_REDIS_KEY)
+	}
+}
+
+func GetServerConfigKey(sererName string) string {
+	if len(sererName) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("/%s/config/%s/%s", env.GetEnv(), cst.ETCD_SERVER_CFG_KEY, sererName)
+}
+
+// 根据key获取通用配置，不区分服务
+func GetConfigKey(key string) string {
+	return fmt.Sprintf("/%s/config/%s", env.GetEnv(), key)
+}

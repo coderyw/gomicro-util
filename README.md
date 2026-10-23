@@ -19,11 +19,11 @@
 
 ## 快速开始
 
-需要 **Go 1.25+**，并配置私有模块：
+需要 **Go 1.25+**。依赖的 `eonid-go` 仍托管在私有的 gitlab.jkluck.vip，需要配置私有模块：
 
 ```bash
 go env -w GOPRIVATE=gitlab.jkluck.vip
-go get gitlab.jkluck.vip/casino/golang/gomicro-util
+go get github.com/coderyw/gomicro-util
 ```
 
 最小服务（HTTP）：
@@ -33,9 +33,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.jkluck.vip/casino/golang/gomicro-util/library/log"
-	"gitlab.jkluck.vip/casino/golang/gomicro-util/library/pmicro"
-	"gitlab.jkluck.vip/casino/golang/gomicro-util/library/pmicro/option"
+	"github.com/coderyw/gomicro-util/library/log"
+	"github.com/coderyw/gomicro-util/library/pmicro"
+	"github.com/coderyw/gomicro-util/library/pmicro/option"
 )
 
 func main() {

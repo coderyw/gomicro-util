@@ -1,0 +1,84 @@
+{
+  "config": {
+    "enable_forward": true
+  },
+  "header": {
+    "title": {
+      "tag": "plain_text",
+      "content": "Title"
+    },
+    "template": "blue"
+  },
+  "msg_type": "interactive",
+  "card": {
+    "elements": [
+      {
+        "tag": "markdown",
+        "content": "**hilo订单消费失败**\n"
+      },
+      {
+        "tag": "markdown",
+        "content": " - **服务端点**: ca-game-hilo.ExtranService.HandlerHiloOrderMq"
+      },
+      {
+        "tag": "markdown",
+        "content": "- **错误码**: 1(system error)"
+      },
+      {
+        "tag": "markdown",
+        "content": "**错误信息**"
+      },
+      {
+        "tag": "markdown",
+        "content": "这个事一个横额今晚几个哦我佛破we可瑞康哦价格金额共计就就附件为叫哦我见过哦阿胶个i哦额吉个IE集合"
+      },
+      {
+        "tag": "markdown",
+        "content": "**其他**"
+      },
+      {
+        "tag": "markdown",
+        "content": "{\"data\":\"123\"}"
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "tag": "markdown",
+        "content": "**hilo订单消费失败**\n"
+      },
+      {
+        "tag": "markdown",
+        "content": "**服务端点**"
+      },
+      {
+        "tag": "markdown",
+        "content": "ca-game-hilo.ExtranService.HandlerHiloOrderMq"
+      },
+      {
+        "tag": "markdown",
+        "content": "**错误码**"
+      },
+      {
+        "tag": "markdown",
+        "content": "1(system error)"
+      },
+      {
+        "tag": "markdown",
+        "content": "**错误信息**"
+      },
+      {
+        "tag": "markdown",
+        "content": "这个事一个横额今晚几个哦我佛破we可瑞康哦价格金额共计就就附件为叫哦我见过哦阿胶个i哦额吉个IE集合"
+      },
+      {
+        "tag": "markdown",
+        "content": "**其他**"
+      },
+      {
+        "tag": "markdown",
+        "content": "{\"data\":\"123\"}"
+      }
+    ]
+  }
+}

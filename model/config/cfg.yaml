@@ -1,0 +1,351 @@
+# 服务名
+server_name: {serviceName}
+
+registry:
+  # 支持 etcd nacos
+  type: '{registryCenter}'
+  hosts:
+    - {registry host}
+  account: '{注册中心账号}'
+  pwd: '{密码}'
+  # 如果是nacos，这个是命名空间id，必须通过环境变量 NACOS_NAMESPACE_ID 指定（yaml 中的 name_id 会被环境变量覆盖）；如果是istio 这个是 K8s namespace 名称
+  name_id: ''
+    # 是否开启istio模式。开启后只会进行服务注册到 type 的注册中心。服务发现调用基于 istio 代理
+  enable_istio: true
+
+# grpc服务相关配置
+rpc_server:
+  listen_on: ":9804"
+  server:
+    auths:
+      #      // 认证方式 jwt | basic (basic标识明文密码认证)。认证方式为空时候，表示不开启认证
+      - auth_type: 'basic'
+        #        // 开启认证的服务端端点。默认是[]默认为空，表示所有服务都需要认证（支持正则匹配）
+        #        // 假定当前服务为 ca-delay-center
+        #        //
+        #        // ca-delay-center.DelayCenterService.PushDelayData 表示对 delayCenter.DelayCenterService.PushDelayData进行认证
+        #        //
+        #        // ca-delay-center.* 表示对 当前服务的多少有 service 的 method 都进行认证
+        #        //
+        #        // ca-delay-center.DelayCenterService.* 表示对 delayCenter.DelayCenterService的所有method进行认证
+        auth_endpoint:
+          - 'ca-delay-center.DelayCenterService.*'
+        #        // 认证密钥 支持多个密钥
+        auth_secret:
+          - 'fwfwefwifwef'
+        #        // 验证版本 可能对应着不同类型认证方式版本，如jwt的版本号
+        auth_version: '1.0.0'
+        force_auth: true
+      - auth_type: 'basic'
+        auth_endpoint:
+          - 'ca-delay-center.TestService.*'
+        auth_secret:
+          - 'fwfwefwifwef'
+        auth_version: '1.0.0'
+        force_auth: false
+  client:
+    auths:
+      - auth_type: 'basic'
+        auth_endpoint:
+          - 'ca-delay-center.DelayCenterService.*'
+        auth_secret: 'fwfwefwifwef'
+        auth_version: '1.0.0'
+
+# http 配置
+http:
+  host: ":8080"
+  # 是否开启接口探活  默认开启
+  enable_live_api: true
+  # 普罗米修斯,不配置默认不开启性能监控
+  enable_prometheus: false
+  # 跨域 header 头
+  cors_headers:
+    - ''
+  # jwt密钥
+  jwt_secret: ''
+  #  jwt 过期时间 s,默认 14天
+  jwt_exp_time: 14*3600
+
+log:
+  # DebugLevel  - 1
+  # InfoLevel 0
+  # WarnLevel 1
+  # ErrorLevel 2
+  # DPanicLevel 3
+  # PanicLevel  4
+  # FatalLevel 5
+  # 会打印Level及以上级别的日志
+  level: 0
+  # 开启堆栈的level级别，会开启StacktraceLevel及以上的日志级别的堆栈打印,默认是2
+  stacktrace_level: 2
+  # 通过默认情况下，在开发中捕获WarnLevel及以上日志，在生产中捕获ErrorLevel及以上
+  disableStacktrace: false
+
+storage:
+  mysql:
+    # 是否开启配置
+    enable: true
+    # 连接地址
+    host: '192.168.31.241'
+    # 连接端口
+    port: '3306'
+    # 用户名
+    user: datamanager
+    # 密码
+    password: 'password'
+    # 默认数据库名
+    database: 'db_game_color'
+    # 是否开启debug模式（目前默认都是开启的）
+    debug: true
+    # 数据库驱动，支持 mysql/postgresql/opengauss 默认 msyql
+    driver: 'mysql'
+    # 最大连接数， -1 表示不限制，默认 200
+    open: 100
+    # 最大空闲连接数，默认 50
+    idle: 20
+    # 最大空闲时间(单位 s):设置可以重复使用连接的最长时间,过期的连接可能会在重新使用前延迟关闭。如果<=0,则连接不会因连接的年龄而关闭。 默认 20s
+    max_life_time: 3600
+    # ssl配置
+    ssl_config:
+      enable: true
+      #  证书位置 如果是本地运行，证书需要放在本地。如果是云上运行，推荐证书放在k8s 的K8s Secret
+      #  kubectl create secret generic rds-ca-secret --from-file=global-bundle.pem //创建证书
+      #  或者 yaml 方式
+      #apiVersion: v1
+      #kind: Secret
+      #metadata:
+      #  name: rds-ca-secret
+      #type: Opaque
+      #data:
+      #  global-bundle.pem: <base64内容>
+      # 然后 deployment 挂载证书
+      #apiVersion: apps/v1
+      #kind: Deployment
+      #metadata:
+      #  name: my-app
+      #spec:
+      #  template:
+      #    spec:
+      #      containers:
+      #        - name: app
+      #          image: my-app:latest
+      #          volumeMounts:
+      #            - name: rds-ca
+      #              mountPath: /etc/ssl/rds
+      #              readOnly: true
+      #      volumes:
+      #        - name: rds-ca
+      #          secret:
+      #            secretName: rds-ca-secret
+      path: '/etc/ssl/global-bundle.pem'
+    # 如果需要配置分表，则需要下面的配置
+    sharding:
+      - table_name: 'b_color_order' # 分表名
+        sharding_key: 'sys_user_id' # 分表键
+        sharding_num: 100 # 分表数量
+    # 雪花id生产规则配置（当前是全局配置）
+    snowflake_gen:
+      snowflakes: #是否使用雪花算法生成主键id,开启需要依赖redis
+        - worker_id_bit: 10 # 工作节点位数，默认10,取值范围[1, 15]
+          data_center: '' #数据中心，在同一个数据中心的服务副本会占用 worker_id,如果worker_id_bit=10，则最大支持1024个节点，当节点都被注册完了，则副本会运行不起来。
+          is_default: 1 # 1=当前数据中心为默认数据中心。 2=非默认数据中心。对于没有配置 tables 的表会使用默认数据中心（⚠️注意：当没有配置默认数据中心，也没有配置 tables 时候，则会 panic）
+        - worker_id_bit: 10
+          data_center: 'table_1'
+          is_default: 2
+      tables: # 表示哪个表使用哪个数据中心，没配置的会走默认的数据中心
+        b_table_1: 'table_1' # b_table_1这个表将会使用 table_1的数据中心
+    # 其余实例配置
+    other:
+      db_2: # 数据库实例  db_2
+        # 连接地址
+        host: '192.168.31.241'
+        # 连接端口
+        port: '3306'
+        # 用户名
+        user: datamanager
+        # 密码
+        password: 'password'
+        # 默认数据库名
+        database: 'db_game_color'
+        # 是否开启debug模式（目前默认都是开启的）
+        debug: true
+        # 数据库驱动，支持 mysql/postgresql/opengauss 默认 msyql
+        driver: 'mysql'
+        # 最大连接数， -1 表示不限制，默认 200
+        open: 100
+        # 最大空闲连接数，默认 50
+        idle: 20
+        # 最大空闲时间(单位 s):设置可以重复使用连接的最长时间,过期的连接可能会在重新使用前延迟关闭。如果<=0,则连接不会因连接的年龄而关闭。 默认 20s
+        max_life_time: 3600
+        # ssl配置
+        ssl_config:
+          enable: true
+          #  证书位置 如果是本地运行，证书需要放在本地。如果是云上运行，推荐证书放在k8s 的K8s Secret
+          #  kubectl create secret generic rds-ca-secret --from-file=global-bundle.pem //创建证书
+          #  或者 yaml 方式
+          #apiVersion: v1
+          #kind: Secret
+          #metadata:
+          #  name: rds-ca-secret
+          #type: Opaque
+          #data:
+          #  global-bundle.pem: <base64内容>
+          # 然后 deployment 挂载证书
+          #apiVersion: apps/v1
+          #kind: Deployment
+          #metadata:
+          #  name: my-app
+          #spec:
+          #  template:
+          #    spec:
+          #      containers:
+          #        - name: app
+          #          image: my-app:latest
+          #          volumeMounts:
+          #            - name: rds-ca
+          #              mountPath: /etc/ssl/rds
+          #              readOnly: true
+          #      volumes:
+          #        - name: rds-ca
+          #          secret:
+          #            secretName: rds-ca-secret
+          path: '/etc/ssl/global-bundle.pem'
+  redis:
+    # 是否开启 redis 配置
+    enable: true
+    # 默认 redis 实例
+    default: 'core'
+    # 实例列表
+    instance:
+      core: # core实例配置
+        # core实例是否开启
+        enable: true
+        # core实例连接地址
+        host:
+          - '192.168.31.34:6379'
+        # core实例密码
+        password: ''
+        # core实例数据库
+        db: 0,
+        # core实例连接池大小
+        pool_size: 100
+        # core实例最大空闲连接数
+        max_idle_conns: 20
+        # 是否开启debug，debug 模式会增加
+        debug: false
+        # 如果redis server是集群模式，且没有配置proxy，则需要开启is_cluster=true
+        is_cluster: false
+      activity: # activity实例配置
+        # 实例是否开启
+        enable: true
+        # 实例连接地址
+        host:
+          - '192.168.31.34:6379'
+        # 实例密码
+        password: ''
+        # core实例数据库
+        db: 0,
+        # 实例连接池大小
+        pool_size: 100
+        # 实例最大空闲连接数
+        max_idle_conns: 20
+        # 是否开启debug，debug 模式会增加
+        debug: false
+        # 如果redis server是集群模式，且没有配置proxy，则需要开启is_cluster=true
+        is_cluster: false
+
+# kafka配置示例
+kafka:
+  # 默认的推送者，如果配置了多个，可以使用此参数指定一个默认的
+  # 如果没有配置默认推送者，则使用第一个配置的推送者
+  # 如果配置了，但是配置找不到则会返回错误
+  default_producer: "producer1"
+  # === 共享 librdkafka 全局连接调优；同时作用于生产者与消费者 ===
+  # TCP keepalive，云/NAT/LB 场景必开
+  socket_keepalive_enable: true
+  # 客户端空闲连接关闭时间（ms），略低于 broker 端 connections.max.idle.ms（典型 600000）
+  connections_max_idle_ms: 540000
+  # 元数据强制刷新周期（ms），加快感知 broker/partition leader 变更
+  metadata_max_age_ms: 180000
+  # 单个 socket 请求超时（ms），与 request.timeout.ms 对齐
+  socket_timeout_ms: 30000
+  # librdkafka 内部调试，逗号分隔，仅排障时打开；典型 generic,broker,topic,msg,protocol；避免 all
+  # debug: ""
+  # 生产者相关配置。支持多个集群和多个有差异的生产者配置
+  producer:
+    - name: "producer1"
+      host:
+        - "localhost:9092"
+      username: "user1"
+      pwd: "password1"
+      # 推送最大重试次数 默认 3 次
+      max_retry_times: 3
+      # 是一个用于 Kafka 生产者请求的类型，表示生产者在收到响应前需要等待的副本确认数量。其定义如下
+      # 0= 不等待任何响应，仅依赖 TCP ACK。
+      # 1= 等待本地副本写入成功。
+      # -1= 等待所有同步副本写入成功，最小同步副本数由 broker 配置 min.insync.replicas 决定。
+      # 默认 -1
+      required_acks: -1
+      # 单次请求超时（ms）
+      request_timeout_ms: 30000
+      # 重试间隔（ms）
+      retry_backoff_ms: 200
+      # 批大小（byte），增大可提升吞吐
+      batch_size: 65536
+      # 生产者缓冲区大小（KB）
+      queue_buffering_max_kbytes: 65536
+
+  #消费者相关配置。支持多个集群
+  consumer:
+    - name: "consumer1"
+      host:
+        - "localhost:9092"
+      username: "user2"
+      pwd: "password2"
+      groups:
+        - group_id: "group1"
+          # 批量消费最大数量, 默认100
+          max_mul_num: 100
+          # 批量消费超时时间 默认1000ms
+          max_mul_timeout_ms: 1000
+          # 批量消费超时时间类型：
+          # 1. 在没有拉取到数据时候，等待剩余数据到来的时间；
+          # 2. 不管有没有拉取到数据，直接等待超时，超时就返回消费数据
+          # 默认 2
+          mul_timeout_type: 2
+          # 当消费组没有提交过偏移量时，-1 从最新开始消费，-2从最旧开始消费，默认 -1
+          offset_initial: -1
+          # 配置项用于指定消费者处理每条消息的最大时间。
+          # 如果消息在该时间内未能被处理（即未能从 Messages 通道中读取），则认为处理超时，分区将暂停拉取新消息，直到处理恢复正常。
+          # 此机制通过 ticker 实现，实际超时时间为 MaxProcessingTime * ChannelBufferSize。默认值为 300000ms。
+          # 请注意，此值必须在代理配置中由 `group.min.session.timeout.ms` 和 `group.max.session.timeout.ms` 指定的允许范围内。
+          # 华为云 kafka 配置的是 6000 ～ 1800000
+          # 单位 ms 注意 `MaxProcessingTimeMill` must be >= `SessionTimeoutMs`
+          max_processing_time_mill: 6000
+          # 此超时时间用于在使用 Kafka 的组管理功能时检测客户端故障。客户端会定期发送心跳包以向代理表明其存活状态。
+          # 如果在会话超时时间到期之前代理未收到任何心跳包，则会将此客户端从组中移除并启动重新平衡。
+          # 请注意，此值必须在代理配置中由 `group.min.session.timeout.ms` 和 `group.max.session.timeout.ms` 指定的允许范围内。
+          # 另请注意，当 `group.protocol` 设置为“consumer”时，不支持此客户端配置group.protocol。
+          # 在这种情况下，会话超时时间由代理配置控制group.consumer.session.timeout.ms。
+          # default 45000 ms
+          # 华为云 kafka 配置的是 6000 ～ 1800000
+          session_timeout_ms: 6000
+          #  偏移量提交策略 0 = 消费后自动提交（提交消费后的数据），1= 拉取后自动提交（提交拉取到的数据，可能还没来得及消费），2= 手动提交（消费后手动提交每条消息）
+          # 默认 0
+          commit_type: 0
+          # 自动提交间隔时间（ms）默认 3000ms
+          auto_commit_interval_ms: 3000
+          # 心跳间隔（ms）
+          heartbeat_interval_ms: 10000
+
+# lark通知相关配置
+lark_cfg:
+  group_1:
+    webhook: https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    sign: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  group_2:
+    webhook: https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    sign: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# 自定义配置
+other:

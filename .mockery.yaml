@@ -1,0 +1,12 @@
+# .mockery.yml  —— v3 写法
+template: testify          # v3 使用模板来决定生成风格
+dir: "mocks/{{.InterfaceDirRelative}}"   # 在接口同目录生成（推荐）
+filename: "mocks.go"  # v3 默认就是这个文件名
+pkgname: "{{.SrcPackageName}}"  # 生成到同名包；想用黑盒测试可改成 _test
+structname: "{{.Mock}}{{.InterfaceName}}"
+
+packages:
+  ./:
+    config:
+      all: true            # 为该包生成所有接口的 mock
+      recursive: true      # 递归子包
