@@ -251,6 +251,7 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/coderyw/goeonid/v2 v2.1.0
 	github.com/coderyw/easyjson v0.0.1
 	github.com/coderyw/easymap v0.3.7
 	github.com/coreos/go-semver v0.3.1 // indirect
@@ -356,7 +357,6 @@ require (
 	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342 // indirect
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	gitlab.jkluck.vip/base/eonid/eonid-go/v2 v2.1.0-rc.2
 	go-micro.dev/v4 v4.11.0
 	go.etcd.io/etcd/api/v3 v3.5.14
 	go.etcd.io/etcd/client/pkg/v3 v3.5.14 // indirect

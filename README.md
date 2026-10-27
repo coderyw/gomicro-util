@@ -19,12 +19,13 @@
 
 ## 快速开始
 
-需要 **Go 1.25+**。依赖的 `eonid-go` 仍托管在私有的 gitlab.jkluck.vip，需要配置私有模块：
+需要 **Go 1.25+**，不再依赖任何私有仓库：
 
 ```bash
-go env -w GOPRIVATE=gitlab.jkluck.vip
 go get github.com/coderyw/gomicro-util
 ```
+
+> 雪花 ID 依赖 [goeonid](https://github.com/coderyw/goeonid)（`github.com/coderyw/goeonid/v2`）。
 
 最小服务（HTTP）：
 

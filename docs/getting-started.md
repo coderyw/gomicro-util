@@ -5,11 +5,10 @@
 ## 1. 准备
 
 ```bash
-go env -w GOPRIVATE=gitlab.jkluck.vip
 go get github.com/coderyw/gomicro-util
 ```
 
-需要 Go 1.25+。依赖的 `eonid-go` 仍在私有的 gitlab.jkluck.vip，需确保 git 已配置其凭据或 SSH。
+需要 Go 1.25+，所有依赖都是公开模块。雪花 ID 依赖 `github.com/coderyw/goeonid/v2`。
 
 ## 2. 准备配置
 

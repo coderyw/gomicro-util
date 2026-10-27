@@ -17,7 +17,7 @@ import (
 	_ "gitee.com/opengauss/openGauss-connector-go-pq"
 	mysqlBase "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
-	"gitlab.jkluck.vip/base/eonid/eonid-go/v2/eonid"
+	"github.com/coderyw/goeonid/v2/eonid"
 	"github.com/coderyw/gomicro-util/library/db/mysql/callback"
 	"github.com/coderyw/gomicro-util/library/log"
 	"github.com/coderyw/gomicro-util/library/metadata"

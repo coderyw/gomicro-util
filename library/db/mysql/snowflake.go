@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gitlab.jkluck.vip/base/eonid/eonid-go/v2/eonid"
-	"gitlab.jkluck.vip/base/eonid/eonid-go/v2/eonid/option"
+	"github.com/coderyw/goeonid/v2/eonid"
+	"github.com/coderyw/goeonid/v2/eonid/option"
 	"github.com/coderyw/gomicro-util/library/db/cache/redis"
 	"github.com/coderyw/gomicro-util/library/env"
 	config2 "github.com/coderyw/gomicro-util/model/config"
