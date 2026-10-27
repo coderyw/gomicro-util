@@ -10,35 +10,32 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/robfig/cron/v3"
 	"github.com/coderyw/gomicro-util/library/log"
 	"github.com/coderyw/gomicro-util/library/metadata"
 	"github.com/coderyw/gomicro-util/library/trace"
 	"github.com/coderyw/gomicro-util/model/config"
+	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-// host: '192.168.64.62'
-// port: '5066'
-// user: 'core_dev_reader'
-// password: 'keWx6LSGku0VAY6t#YL'
-// database: 'ca_user'
 func TestMysql(t *testing.T) {
-	Init()
+	Init(t)
+	ok := testenv.DBConn(t, "OK_GAME_DB")
 	c, _, err := InitConnect("test", config.DbConfig{
 		Default: "core",
 		Instance: map[string]config.DbInstanceConfig{
 			"core": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:        "ca-saas-ok-game.cluster-c3i4m24c0pup.ap-southeast-1.rds.amazonaws.com",
+					Host:        ok.Host,
 					Port:        "3261",
-					User:        "ok_user",
-					Password:    "VNlK8l4Kk1dJh7wfzUI9",
+					User:        ok.User,
+					Password:    ok.Password,
 					Database:    "ca_default",
 					Driver:      "mysql",
 					Open:        50,
@@ -59,10 +56,10 @@ func TestMysql(t *testing.T) {
 			},
 			"game": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:        "ca-saas-ok-game.cluster-c3i4m24c0pup.ap-southeast-1.rds.amazonaws.com",
+					Host:        ok.Host,
 					Port:        "3261",
-					User:        "ok_user",
-					Password:    "VNlK8l4Kk1dJh7wfzUI9",
+					User:        ok.User,
+					Password:    ok.Password,
 					Database:    "ca_default",
 					Driver:      "mysql",
 					Open:        50,
@@ -301,16 +298,17 @@ func (d *DwsPlayerGameDayStats) TableName() string {
 }
 
 func TestGaussDb(t *testing.T) {
-	Init()
+	Init(t)
+	gauss := testenv.DBConn(t, "GAUSS_TEST_DB")
 	c, _, err := InitConnect("test", config.DbConfig{
 		Default: "core",
 		Instance: map[string]config.DbInstanceConfig{
 			"core": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:        "192.168.56.143",
+					Host:        gauss.Host,
 					Port:        "8000",
-					User:        "go_test_user",
-					Password:    "PGlleWB7zwNDDDs",
+					User:        gauss.User,
+					Password:    gauss.Password,
 					Database:    "ns_db",
 					Driver:      "opengauss",
 					Open:        50,
@@ -436,6 +434,7 @@ func TestGaussDb(t *testing.T) {
 }
 
 func TestBatch(t *testing.T) {
+	caUser := testenv.DBConn(t, "CA_USER_DB")
 	type args struct {
 		serverName string
 		conf       config.DbConfig
@@ -452,10 +451,10 @@ func TestBatch(t *testing.T) {
 				Instance: map[string]config.DbInstanceConfig{
 					"core": {
 						DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-							Host:        "94.74.91.146",
+							Host:        caUser.Host,
 							Port:        "5066",
-							User:        "ca_core_user",
-							Password:    "sfQQLtMqQ7nZbGG4pkHX",
+							User:        caUser.User,
+							Password:    caUser.Password,
 							Database:    "ca_user",
 							Driver:      "mysql",
 							Open:        50,
@@ -500,6 +499,7 @@ func TestBatch(t *testing.T) {
 }
 
 func TestBatchQuery(t *testing.T) {
+	caUser := testenv.DBConn(t, "CA_USER_DB")
 	type args struct {
 		serverName string
 		conf       config.DbConfig
@@ -516,10 +516,10 @@ func TestBatchQuery(t *testing.T) {
 				Instance: map[string]config.DbInstanceConfig{
 					"core": {
 						DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-							Host:     "94.74.91.146",
+							Host:     caUser.Host,
 							Port:     "5066",
-							User:     "ca_core_user",
-							Password: "sfQQLtMqQ7nZbGG4pkHX",
+							User:     caUser.User,
+							Password: caUser.Password,
 							Database: "ca_user",
 							Driver:   "mysql",
 						},
@@ -551,6 +551,7 @@ func TestBatchQuery(t *testing.T) {
 }
 
 func TestMulSource(t *testing.T) {
+	release := testenv.DBConn(t, "RELEASE_GAUSS_DB")
 	type args struct {
 		serverName string
 		conf       config.DbConfig
@@ -567,20 +568,20 @@ func TestMulSource(t *testing.T) {
 				Instance: map[string]config.DbInstanceConfig{
 					"core": {
 						DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-							Host:     "120.46.12.103",
+							Host:     release.Host,
 							Port:     "8000",
-							User:     "release_user",
-							Password: "4@Xz5^T7wL1#eP8&yQm9",
+							User:     release.User,
+							Password: release.Password,
 							Database: "ca_core",
 							Driver:   "opengauss",
 						},
 					},
 					"ca_game_base": {
 						DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-							Host:     "120.46.12.103",
+							Host:     release.Host,
 							Port:     "8000",
-							User:     "release_user",
-							Password: "4@Xz5^T7wL1#eP8&yQm9",
+							User:     release.User,
+							Password: release.Password,
 							Database: "ca_game",
 							Driver:   "opengauss",
 						},

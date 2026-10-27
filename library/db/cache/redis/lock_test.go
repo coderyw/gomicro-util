@@ -8,9 +8,9 @@ package redis
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
 	"github.com/coderyw/gomicro-util/library/db/cache/redis/prefixenum"
 	"github.com/coderyw/gomicro-util/library/log"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"sync"
 	"testing"
@@ -18,7 +18,7 @@ import (
 )
 
 func TestRedis_LockUntilSuccWithRenewal(t *testing.T) {
-	Init()
+	Init(t)
 
 	type args struct {
 		enum            prefixenum.PrefixEnum
@@ -57,7 +57,7 @@ func TestRedis_LockUntilSuccWithRenewal(t *testing.T) {
 }
 
 func Test_Betch_LockUntilSuccWithRenewal(t *testing.T) {
-	Init()
+	Init(t)
 	wg := sync.WaitGroup{}
 	for i := range 2 {
 		wg.Add(1)
@@ -77,7 +77,7 @@ func Test_Betch_LockUntilSuccWithRenewal(t *testing.T) {
 }
 
 func TestRedis_UnLock(t *testing.T) {
-	Init()
+	Init(t)
 	type fields struct {
 		Client redis.UniversalClient
 	}
@@ -119,7 +119,7 @@ func TestRedis_UnLock(t *testing.T) {
 }
 
 func TestRedis_LockWaitTimeOutWithRenewal(t *testing.T) {
-	Init()
+	Init(t)
 	type fields struct {
 		Client redis.UniversalClient
 	}

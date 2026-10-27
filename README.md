@@ -57,6 +57,19 @@ func main() {
 
 运行期依赖按所用组件而定：MySQL/PostgreSQL、Redis、Kafka、Nacos 或 etcd。
 
+## 测试
+
+依赖外部服务（MySQL、Redis、Nacos、S3、飞书等）的测试，连接信息全部从环境变量读取（见 `internal/testenv`），**代码里不写任何地址和账号密码**；对应环境变量未设置时自动跳过。
+
+| 环境变量 | 用途 |
+|-|-|
+| `GOMICRO_TEST_REDIS_CLUSTER_ADDR` / `_PASSWORD` | Redis 集群（`library/db/cache/redis`、`library/db/mysql` 分表测试） |
+| `GOMICRO_TEST_<NAME>_HOST` / `_USER` / `_PASSWORD` | 数据库，`<NAME>` 为 `OK_GAME_DB`、`CORE_DEV_DB`、`GAUSS_TEST_DB`、`CA_USER_DB`、`RELEASE_GAUSS_DB` |
+| `GOMICRO_TEST_NACOS_ADDR` / `_PASSWORD` / `_ACCOUNT` | Nacos（账号默认 `nacos`） |
+| `GOMICRO_TEST_S3_ACCESS_KEY_ID` / `_SECRET_ACCESS_KEY` | S3 对象存储 |
+| `GOMICRO_TEST_LARK_WEBHOOK` / `_SIGN` | 飞书机器人 |
+| `GOMICRO_TEST_KAFKA_BROKERS` | Kafka broker，逗号分隔，默认 `127.0.0.1:9092` |
+
 ## 组件总览
 
 | 分类 | 包路径 | 作用 | 文档 |

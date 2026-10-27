@@ -32,7 +32,7 @@ func TestGenerateToken(t *testing.T) {
 					ExpiresAt: jwt.NewNumericDate(time.Unix(1750735177, 0)),
 				},
 			},
-			secret: []byte("wCk9njsyXJ0t7YkJDFZrsHdK4h9jB6QlIsr3K1Hf4pI="),
+			secret: []byte("test-only-488667870fd4860a81d1751f8f5d92fe"),
 		}, wantErr: false},
 	}
 	for _, tt := range tests {
@@ -59,8 +59,8 @@ func TestParseToken(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "过期", args: args{
-			tokenString: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTA4MTYwMzIsImV4cCI6MTc1MDU2MTQzMiwidXNlcl9pZCI6IjEwNDI0OTg2OTgyMDIzMTY4NiIsImFwcF9wYWNrYWdlX25hbWUiOiIifQ.jGuK8Z8oYNWmvzwZ7pEL3NHs-IPfiyx93B41eMr_OuI",
-			secret:      []byte("wCk9njsyXJ0t7YkJDFZrsHdK4h9jB6QlIsr3K1Hf4pI="),
+			tokenString: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NTA4MTYwMzIsImV4cCI6MTc1MDU2MTQzMiwidXNlcl9pZCI6IjEwNDI0OTg2OTgyMDIzMTY4NiIsImFwcF9wYWNrYWdlX25hbWUiOiIifQ.xjUZb09DMh-tT3va1YosqSFXPtOOkLetYw2WHIMXCus",
+			secret:      []byte("test-only-488667870fd4860a81d1751f8f5d92fe"),
 			claims:      &AuthClaims{},
 		}, wantErr: false},
 	}

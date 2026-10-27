@@ -10,35 +10,37 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/longbridgeapp/assert"
-	"github.com/redis/go-redis/v9"
 	"github.com/coderyw/gomicro-util/library/db/cache/redis/prefixenum"
 	"github.com/coderyw/gomicro-util/library/metadata"
 	config2 "github.com/coderyw/gomicro-util/model/config"
 	"github.com/coderyw/gomicro-util/util/strings"
+	"github.com/longbridgeapp/assert"
+	"github.com/redis/go-redis/v9"
 )
 
-func Init() {
+func Init(t *testing.T) {
+	rc := testenv.Require(t, "GOMICRO_TEST_REDIS_CLUSTER_ADDR", "GOMICRO_TEST_REDIS_CLUSTER_PASSWORD")
 	_, _, err := InitRedis(config2.RedisConfig{
 		Enable:  true,
 		Default: "activity",
 		Instance: map[string]config2.RedisInstanceConfig{
 			"core": config2.RedisInstanceConfig{
 				Enable:    true,
-				Host:      []string{"clustercfg.dev-valkey-cfn.dkgdhb.apse1.cache.amazonaws.com:6379"},
-				Password:  "Jr6s7UvKcsbhkA4UF6",
+				Host:      []string{rc[0]},
+				Password:  rc[1],
 				Db:        0,
 				Debug:     true,
 				IsCluster: true,
 			},
 			"activity": config2.RedisInstanceConfig{
 				Enable:    true,
-				Host:      []string{"clustercfg.dev-valkey-cfn.dkgdhb.apse1.cache.amazonaws.com:6379"},
-				Password:  "Jr6s7UvKcsbhkA4UF6",
+				Host:      []string{rc[0]},
+				Password:  rc[1],
 				Db:        0,
 				Debug:     true,
 				IsCluster: true,
@@ -51,7 +53,7 @@ func Init() {
 }
 
 func TestRedis_withLog(t *testing.T) {
-	Init()
+	Init(t)
 	cms, _ := GetRedis(context.Background()).Client().Command(context.Background()).Result()
 	for _, v := range cms {
 		fmt.Println(v.Name, " first key pos ", v.FirstKeyPos, " step ", v.StepCount, " lastPos ", v.LastKeyPos)
@@ -67,7 +69,7 @@ func TestRedis_withLog(t *testing.T) {
 	t.Logf("got val: %v", val)
 }
 func TestRedis_KeyPrefixHook(t *testing.T) {
-	Init()
+	Init(t)
 	ctx := metadata.SetCtxData(context.Background(), metadata.CONTEXT_NAME_SPACE, "test")
 	t.Run("setnx", func(t *testing.T) {
 		GetRedis(ctx).Setnx(ctx, "", "key", "value", time.Second*1024)
@@ -84,7 +86,7 @@ func TestRedis_KeyPrefixHook(t *testing.T) {
 }
 
 func TestRedis_LockWithRenewal(t *testing.T) {
-	Init()
+	Init(t)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
@@ -125,13 +127,13 @@ func TestRedis_LockWithRenewal(t *testing.T) {
 }
 
 func TestEvalSha(t *testing.T) {
-	Init()
+	Init(t)
 	_, err := GetRedis(context.Background()).EvalSha(context.Background(), "234", []string{"dw"})
 	fmt.Println(err)
 }
 
 func TestLockWithTimeOut(t *testing.T) {
-	Init()
+	Init(t)
 	key, err := GetRedis(context.Background()).LockWithTimeOut(context.Background(), "", "test_lock", 5*time.Second, time.Millisecond, 5*time.Second)
 	if err != nil {
 		panic(err)
@@ -146,7 +148,7 @@ func TestLockWithTimeOut(t *testing.T) {
 }
 
 func TestRedis_IncrbyLimit(t *testing.T) {
-	Init()
+	Init(t)
 	key := strings.RandStr(5)
 	type fields struct {
 		Client redis.UniversalClient
@@ -212,7 +214,7 @@ func TestRedis_IncrbyLimit(t *testing.T) {
 }
 
 func TestRedis_SetValueExist(t *testing.T) {
-	Init()
+	Init(t)
 	type args struct {
 		prefix prefixenum.PrefixEnum
 		key    string

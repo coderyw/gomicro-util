@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"os"
 	"testing"
 	"time"
@@ -13,14 +14,15 @@ import (
 )
 
 func Init(t *testing.T) {
+	s3 := testenv.Require(t, "GOMICRO_TEST_S3_ACCESS_KEY_ID", "GOMICRO_TEST_S3_SECRET_ACCESS_KEY")
 	_, err := InitObjectStorage(&config.ObjectStorage{
 		AwsS3Config: map[string]*config.AwsS3Config{
 			"s3_core": &config.AwsS3Config{
 				Region:                    "ap-southeast-1",
 				Endpoint:                  "http://s3.ap-southeast-1.amazonaws.com",
 				UseDefaultCredentialChain: false, // 推荐：EKS IRSA / ECS Task Role / EC2 IAM Role
-				AccessKeyID:               "xxxx",
-				SecretAccessKey:           "E+oC7i+W/8wwLtzHaSorAoqREBN5/xxx",
+				AccessKeyID:               s3[0],
+				SecretAccessKey:           s3[1],
 				MaxRetries:                3,
 				Buckets: []config.AwsS3BucketConfig{
 					{

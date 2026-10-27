@@ -1167,7 +1167,7 @@ library包含了各种组件包，以及微服务gomicro包
     redis:
       enable: true
       host:
-        - '192.168.31.34:6379'
+        - 'redis.example.com:6379'
       password: ''
       db: 0,
       # 如果redis server是集群模式，且没有配置proxy，则需要开启is_cluster=true
@@ -1191,7 +1191,7 @@ library包含了各种组件包，以及微服务gomicro包
   storage:
     mysql:
       enable: true
-      host: '192.168.31.241'
+      host: 'mysql.example.com'
       port: '3306'
       user: datamanager
       password: 'password'
@@ -1251,7 +1251,7 @@ library包含了各种组件包，以及微服务gomicro包
   	# 消费者根据代码是否传入handler判断是否开启
     enable_producer: true
     host:
-      - 192.168.31.34:29092
+      - kafka.example.com:29092
   ```
 
   使用：

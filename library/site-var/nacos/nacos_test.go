@@ -3,6 +3,7 @@ package nacos
 import (
 	"context"
 	"errors"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"strings"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 )
 
 func TestSyncNacos(t *testing.T) {
+	nc := testenv.Require(t, "GOMICRO_TEST_NACOS_ADDR", "GOMICRO_TEST_NACOS_PASSWORD")
 	type args struct {
 		cfg *config.RegistryCfg
 	}
@@ -22,10 +24,10 @@ func TestSyncNacos(t *testing.T) {
 		{name: "测试链接", args: args{cfg: &config.RegistryCfg{
 			Type: "nacos",
 			Hosts: []string{
-				"dev-nacos-internal-NLB-664ef66d616ee60a.elb.ap-southeast-1.amazonaws.com:8848",
+				nc[0],
 			},
-			Account:     "nacos",
-			Pwd:         "hU6csGhudotd0HBCqzrW",
+			Account:     testenv.Get("GOMICRO_TEST_NACOS_ACCOUNT", "nacos"),
+			Pwd:         nc[1],
 			NameId:      "",
 			EnableIstio: false,
 		}}, wantErr: false},

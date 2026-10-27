@@ -25,7 +25,7 @@ func TestUserNotifyConfig_UnmarshalJSON(t *testing.T) {
 }
 
 func Test1(t *testing.T) {
-	data := `{"server_name":"ysw-gateway-go","environ":"dev","http":{"host":":8099"},"etcd":{"etcd_hosts":["10.11.12.11:2379"]},"rpc_server":{"listen_on":"0.0.0.0:9899"},"log":{"development":true,"disableStacktrace":false}}`
+	data := `{"server_name":"ysw-gateway-go","environ":"dev","http":{"host":":8099"},"etcd":{"etcd_hosts":["127.0.0.1:2379"]},"rpc_server":{"listen_on":"0.0.0.0:9899"},"log":{"development":true,"disableStacktrace":false}}`
 	cfg := new(ServerConfig)
 	err := json.Unmarshal([]byte(data), cfg)
 	fmt.Println(*cfg)

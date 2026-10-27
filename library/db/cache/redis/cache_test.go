@@ -14,12 +14,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
 	facade2 "github.com/coderyw/gomicro-util/library/db/cache/redis/facade"
 	"github.com/coderyw/gomicro-util/library/db/cache/redis/test_model"
 	"github.com/coderyw/gomicro-util/library/log"
 	"github.com/coderyw/gomicro-util/library/trace"
 	"github.com/coderyw/gomicro-util/model/facade"
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -103,7 +103,7 @@ func Te[T any]() (t T) {
 }
 
 func TestGetHMCacheFieldInteger(t *testing.T) {
-	Init()
+	Init(t)
 	type args struct {
 		ctx   context.Context
 		key   string
@@ -169,7 +169,7 @@ func TestGetHMCacheFieldInteger(t *testing.T) {
 }
 
 func TestGetObjHMCache(t *testing.T) {
-	Init()
+	Init(t)
 	type args[T facade.HMField] struct {
 		ctx    context.Context
 		key    string
@@ -249,7 +249,7 @@ func (k *Kv) Get() (string, decimal.Decimal) {
 }
 
 func TestGetZSetList(t *testing.T) {
-	Init()
+	Init(t)
 	type args[T facade2.ZSetAction] struct {
 		ctx  context.Context
 		rd   facade2.RedisInterface
@@ -332,7 +332,7 @@ func TestGetZSetList(t *testing.T) {
 }
 
 func TestGetFromCacheOrDb(t *testing.T) {
-	Init()
+	Init(t)
 
 	type StructA struct {
 		Name string `json:"name"`

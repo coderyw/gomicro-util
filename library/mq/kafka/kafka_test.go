@@ -9,12 +9,13 @@ package kafka
 import (
 	"context"
 	"fmt"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"math/rand"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/coderyw/gomicro-util/library/cron"
 	"github.com/coderyw/gomicro-util/library/log"
 	"github.com/coderyw/gomicro-util/library/metadata"
@@ -23,6 +24,7 @@ import (
 	"github.com/coderyw/gomicro-util/library/trace"
 	"github.com/coderyw/gomicro-util/model/config"
 	cron2 "github.com/coderyw/gomicro-util/model/cron"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"go.uber.org/zap"
 )
 
@@ -68,9 +70,7 @@ func TestCreateTopic(t *testing.T) {
 
 func TestKafkaSingle(t *testing.T) {
 	wg.Add(1)
-	//    - '192.168.3.33:9092'
-	//    - '192.168.44.199:9092'
-	//    - '192.168.55.82:9092'
+	//    - '127.0.0.1:9092'
 	acks := int16(1)
 	//ctx := metadata.SetCtxData(context.TODO(), metadata.CONTEXT_NAME_SPACE, "123")
 	mgr, c, cj, err := InitConfluentKafkaManager("teste1", config.KafkaCfg{
@@ -150,9 +150,7 @@ func TestKafkaSingle(t *testing.T) {
 
 func TestKafkaBatch(t *testing.T) {
 	wg.Add(1)
-	//    - '192.168.3.33:9092'
-	//    - '192.168.44.199:9092'
-	//    - '192.168.55.82:9092'
+	//    - '127.0.0.1:9092'
 	acks := int16(1)
 	if _, c, _, err := InitConfluentKafkaManager("teste1", config.KafkaCfg{
 		DefaultProducer: "ca-msk-demo",
@@ -215,7 +213,7 @@ func TestPush(t *testing.T) {
 		DefaultProducer: "core",
 		Hosts: map[string]config.KafkaHost{
 			"core": {
-				Host: []string{"192.168.3.33:9092", "192.168.44.199:9092", "192.168.55.82:9092"},
+				Host: strings.Split(testenv.Get("GOMICRO_TEST_KAFKA_BROKERS", "127.0.0.1:9092"), ","),
 			},
 		},
 		Producer: []config.KafkaProducer{
@@ -251,7 +249,7 @@ func TestPushSync(t *testing.T) {
 		DefaultProducer: "core",
 		Hosts: map[string]config.KafkaHost{
 			"core": {
-				Host: []string{"192.168.3.33:9092", "192.168.44.199:9092", "192.168.55.82:9092"},
+				Host: strings.Split(testenv.Get("GOMICRO_TEST_KAFKA_BROKERS", "127.0.0.1:9092"), ","),
 			},
 		},
 		Producer: []config.KafkaProducer{
@@ -288,7 +286,7 @@ func TestPushSyncInstance(t *testing.T) {
 		DefaultProducer: "core",
 		Hosts: map[string]config.KafkaHost{
 			"core": {
-				Host: []string{"192.168.3.33:9092", "192.168.44.199:9092", "192.168.55.82:9092"},
+				Host: strings.Split(testenv.Get("GOMICRO_TEST_KAFKA_BROKERS", "127.0.0.1:9092"), ","),
 			},
 		},
 		Producer: []config.KafkaProducer{

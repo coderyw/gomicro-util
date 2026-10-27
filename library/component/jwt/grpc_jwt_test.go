@@ -15,8 +15,8 @@ func TestParseGrpcJwtToken(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "jwt", args: args{
-			tokenString:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjpbeyJ1c2VyIjoiaHR0cC1jbGllbnQifV0sImlhdCI6MTc2ODgxNTA5MiwiZXhwIjoxNzY4NjYxOTk5LCJhdWQiOiIiLCJpc3MiOiJmcmFuY2lzIiwic3ViIjoiIn0.jyRfAFhsI8bqO7F8Lm5mgljpj-STaC8CGZqh2ZLls1A",
-			secret:       []byte("fwfwefwifwef21212"),
+			tokenString:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjpbeyJ1c2VyIjoiaHR0cC1jbGllbnQifV0sImlhdCI6MTc2ODgxNTA5MiwiZXhwIjoxNzY4NjYxOTk5LCJhdWQiOiIiLCJpc3MiOiJmcmFuY2lzIiwic3ViIjoiIn0.u52MEsBY3rE9Gvj_Wrg1cp6GCZOzXfPgpXVBJ0A3qYM",
+			secret:       []byte("test-only-ee9aba1bd903913fa37a237e7b766e6f"),
 			claims:       &AuthGrpcClaims{},
 			skipValidate: false,
 		}, wantErr: false},

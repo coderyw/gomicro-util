@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"regexp"
 	"strings"
 	"testing"
@@ -40,16 +41,17 @@ func (BVipUser) TableName() string {
 }
 
 func newTestDB(t *testing.T) *gorm.DB {
-	Init()
+	Init(t)
+	ok := testenv.DBConn(t, "OK_GAME_DB")
 	_, _, err := InitConnect("test", config.DbConfig{
 		Default: "core",
 		Instance: map[string]config.DbInstanceConfig{
 			"core": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:        "ca-saas-ok-game.cluster-c3i4m24c0pup.ap-southeast-1.rds.amazonaws.com",
+					Host:        ok.Host,
 					Port:        "3261",
-					User:        "ok_user",
-					Password:    "VNlK8l4Kk1dJh7wfzUI9",
+					User:        ok.User,
+					Password:    ok.Password,
 					Database:    "ca_default",
 					Driver:      "mysql",
 					Open:        50,
@@ -70,10 +72,10 @@ func newTestDB(t *testing.T) *gorm.DB {
 			},
 			"game": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:        "ca-saas-ok-game.cluster-c3i4m24c0pup.ap-southeast-1.rds.amazonaws.com",
+					Host:        ok.Host,
 					Port:        "3261",
-					User:        "ok_user",
-					Password:    "VNlK8l4Kk1dJh7wfzUI9",
+					User:        ok.User,
+					Password:    ok.Password,
 					Database:    "ca_default",
 					Driver:      "mysql",
 					Open:        50,

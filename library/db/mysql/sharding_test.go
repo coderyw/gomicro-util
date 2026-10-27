@@ -9,13 +9,14 @@ package mysql
 import (
 	"context"
 	"fmt"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-	"github.com/xwb1989/sqlparser"
 	"github.com/coderyw/gomicro-util/library/db/cache/redis"
 	"github.com/coderyw/gomicro-util/model/config"
+	"github.com/shopspring/decimal"
+	"github.com/xwb1989/sqlparser"
 	"gorm.io/gorm"
 )
 
@@ -86,22 +87,23 @@ func (m *BJiliOrders) TableName() string {
 	return "ca_game_jili.b_jili_orders"
 }
 
-func Init() {
+func Init(t *testing.T) {
+	rc := testenv.Require(t, "GOMICRO_TEST_REDIS_CLUSTER_ADDR", "GOMICRO_TEST_REDIS_CLUSTER_PASSWORD")
 	_, _, err := redis.InitRedis(config.RedisConfig{
 		Enable:  true,
 		Default: "core",
 		Instance: map[string]config.RedisInstanceConfig{
 			"core": {
 				Enable:    true,
-				Host:      []string{"clustercfg.dev-valkey-cfn.dkgdhb.apse1.cache.amazonaws.com:6379"},
-				Password:  "Jr6s7UvKcsbhkA4UF6",
+				Host:      []string{rc[0]},
+				Password:  rc[1],
 				Db:        0,
 				IsCluster: true,
 			},
 			"snowflake": {
 				Enable:    true,
-				Host:      []string{"clustercfg.dev-valkey-cfn.dkgdhb.apse1.cache.amazonaws.com:6379"},
-				Password:  "Jr6s7UvKcsbhkA4UF6",
+				Host:      []string{rc[0]},
+				Password:  rc[1],
 				Db:        0,
 				IsCluster: true,
 			},
@@ -113,17 +115,18 @@ func Init() {
 }
 
 func TestGaussSharding(t *testing.T) {
-	Init()
+	core := testenv.DBConn(t, "CORE_DEV_DB")
+	Init(t)
 
 	conf := config.DbConfig{
 		Default: "core",
 		Instance: map[string]config.DbInstanceConfig{
 			"core": {
 				DbBaseInstanceConfig: config.DbBaseInstanceConfig{
-					Host:     "192.168.64.62",
+					Host:     core.Host,
 					Port:     "5066",
-					User:     "core_dev_reader",
-					Password: "keWx6LSGku0VAY6t#YL",
+					User:     core.User,
+					Password: core.Password,
 					Database: "ca_user",
 					Driver:   "mysql",
 					Open:     100,

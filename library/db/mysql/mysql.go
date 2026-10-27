@@ -15,8 +15,6 @@ import (
 	"time"
 
 	_ "gitee.com/opengauss/openGauss-connector-go-pq"
-	mysqlBase "github.com/go-sql-driver/mysql"
-	"github.com/pkg/errors"
 	"github.com/coderyw/goeonid/v2/eonid"
 	"github.com/coderyw/gomicro-util/library/db/mysql/callback"
 	"github.com/coderyw/gomicro-util/library/log"
@@ -26,6 +24,8 @@ import (
 	config2 "github.com/coderyw/gomicro-util/model/config"
 	"github.com/coderyw/gomicro-util/model/cron"
 	"github.com/coderyw/gomicro-util/model/micro"
+	mysqlBase "github.com/go-sql-driver/mysql"
+	"github.com/pkg/errors"
 	mysql "gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -603,7 +603,6 @@ func getDialector(instance string, conf config2.DbBaseInstanceConfig) (gorm.Dial
 	var host string
 	switch conf.Driver {
 	case config2.DRIVER_MYSQL: // MySQL驱动配置
-		// host := "ddm_test_user:L03kV2y7WUgXVwjga%v7@tcp(192.168.64.19:5066)/ca_game_all_order?charset=utf8mb4&parseTime=True&loc=Local&useServerPrepStmts=true&interpolateParams=true"
 		// 构建MySQL DSN连接字符串
 		// charset=utf8mb4: 支持完整的UTF-8字符集，包括emoji
 		// parseTime=True: 自动解析MySQL的TIME和DATE类型为Go的time.Time
@@ -660,7 +659,6 @@ func initMysqlDialector(instance string, conf config2.DbBaseInstanceConfig) (gor
 	if len(conf.Port) > 0 {
 		conf.Host += ":" + conf.Port
 	}
-	//dsn := "ddm_test_user:L03kV2y7WUgXVwjga%v7@tcp(192.168.64.19:5066)/ca_game_all_order?charset=utf8mb4&parseTime=True&loc=Local&useServerPrepStmts=true&interpolateParams=true"
 	host := fmt.Sprintf(fmtStr, conf.User, conf.Password, conf.Host, conf.Database)
 	return mysql.Open(host), nil
 }

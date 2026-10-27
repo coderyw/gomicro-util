@@ -123,7 +123,7 @@ storage:
     instance:
       core:
         # 连接地址
-        host: '192.168.31.241'
+        host: 'mysql.example.com'
         # 连接端口
         port: '3306'
         # 用户名
@@ -195,7 +195,7 @@ storage:
         # ⚠️ 当前实现有缺陷：从库连接实际使用的是主库的连接信息（host/port/user/password/database/ssl_config/driver 均被忽略），
         # 且从库的 max_life_time / max_idle_time 被当作纳秒处理。修复前不要依赖读写分离
         replicas:
-          - host: '192.168.31.242'
+          - host: 'mysql-replica.example.com'
             port: '3306'
             user: datamanager1
             password: 'password'
@@ -214,7 +214,7 @@ storage:
                 sharding_num: 100 # 分表数量
       # 游戏库配置
       game:
-        host: '192.168.31.241'
+        host: 'mysql.example.com'
         port: '3306'
         user: datamanager
         password: 'password'
@@ -238,7 +238,7 @@ storage:
             - worker_id_bit: 10
               data_center: 'ca_user'
         replicas:
-          - host: '192.168.31.242'
+          - host: 'mysql-replica.example.com'
             port: '3306'
             user: datamanager1
             password: 'password'
@@ -271,7 +271,7 @@ storage:
         enable: true
         # core实例连接地址
         host:
-          - '192.168.31.34:6379'
+          - 'redis.example.com:6379'
         # core实例密码
         password: ''
         # core实例数据库
@@ -289,7 +289,7 @@ storage:
         enable: true
         # 实例连接地址
         host:
-          - '192.168.31.34:6379'
+          - 'redis.example.com:6379'
         # 实例密码
         password: ''
         # core实例数据库

@@ -86,7 +86,7 @@ storage:
     # 是否开启配置
     enable: true
     # 连接地址
-    host: '192.168.31.241'
+    host: 'mysql.example.com'
     # 连接端口
     port: '3306'
     # 用户名
@@ -158,7 +158,7 @@ storage:
     other:
       db_2: # 数据库实例  db_2
         # 连接地址
-        host: '192.168.31.241'
+        host: 'mysql.example.com'
         # 连接端口
         port: '3306'
         # 用户名
@@ -222,7 +222,7 @@ storage:
         enable: true
         # core实例连接地址
         host:
-          - '192.168.31.34:6379'
+          - 'redis.example.com:6379'
         # core实例密码
         password: ''
         # core实例数据库
@@ -240,7 +240,7 @@ storage:
         enable: true
         # 实例连接地址
         host:
-          - '192.168.31.34:6379'
+          - 'redis.example.com:6379'
         # 实例密码
         password: ''
         # core实例数据库

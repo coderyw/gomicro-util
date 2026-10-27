@@ -27,7 +27,7 @@ const (
   instance:
     core:
       # 连接地址
-      host: '192.168.31.241'
+      host: 'mysql.example.com'
       # 连接端口
       port: '3306'
       # 用户名
@@ -95,7 +95,7 @@ const (
             data_center: 'ca_user'
       # 从库配置
       replicas:
-        - host: '192.168.31.242'
+        - host: 'mysql-replica.example.com'
           port: '3306'
           user: datamanager1
           password: 'password'
@@ -114,7 +114,7 @@ const (
               sharding_num: 100 # 分表数量
     # 游戏库配置
     game:
-      host: '192.168.31.241'
+      host: 'mysql.example.com'
       port: '3306'
       user: datamanager
       password: 'password'
@@ -138,7 +138,7 @@ const (
           - worker_id_bit: 10
             data_center: 'ca_user'
       replicas:
-        - host: '192.168.31.242'
+        - host: 'mysql-replica.example.com'
           port: '3306'
           user: datamanager1
           password: 'password'

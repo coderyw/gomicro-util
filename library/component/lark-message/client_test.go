@@ -8,24 +8,26 @@ package lark_message
 
 import (
 	"context"
+	"github.com/coderyw/gomicro-util/internal/testenv"
 	srv_config "github.com/coderyw/gomicro-util/model/config"
 	"testing"
 	"time"
 )
 
-func Init() {
+func Init(t *testing.T) {
+	lark := testenv.Require(t, "GOMICRO_TEST_LARK_WEBHOOK", "GOMICRO_TEST_LARK_SIGN")
 	srv_config.LarkConfig = srv_config.LarkCfg{
 		Groups: map[string]srv_config.LarkGroup{
 			"test": {
-				WebHook: "https://open.larksuite.com/open-apis/bot/v2/hook/9543e7c0-f684-4d14-b29c-fbdb98797778",
-				Sign:    "NwXrdsho8ofin7rCYQb0Cc",
+				WebHook: lark[0],
+				Sign:    lark[1],
 			},
 		},
 	}
 }
 
 func TestSendLarkMessage(t *testing.T) {
-	Init()
+	Init(t)
 	type args struct {
 		ctx     context.Context
 		groupId string
