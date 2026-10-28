@@ -61,65 +61,62 @@ func newWatcher(nr *nacosRegistry, opts ...registry.WatchOption) (registry.Watch
 	return &nw, nil
 }
 
+// callBackHandle 处理订阅推送：services 是该服务的全量实例列表，与上一次的列表按 InstanceId 比对，
+// 逐个下发 create / update / delete。
+//
+// 列表可能为空（UpdateCacheWhenEmpty=true 且实例全部下线），不能按下标取服务名，否则 panic 会打死推送协程所在进程；
+// 服务名用订阅时的 wo.Service 作为缓存键。
+// 回调在 SDK 的推送协程里同步执行，下发时同时监听 exit，watcher 停止后不再阻塞推送协程。
 func (nw *watcher) callBackHandle(services []model.Instance, err error) {
 	if err != nil {
 		log.Error("[Nacos] watcher call back handle error", zap.Error(err))
 		return
 	}
-	serviceName := services[0].ServiceName
+	key := nw.wo.Service
 
-	if nw.cacheServices[serviceName] == nil {
-		nw.Lock()
-		nw.cacheServices[serviceName] = services
-		nw.Unlock()
+	nw.Lock()
+	old := nw.cacheServices[key]
+	nw.cacheServices[key] = append([]model.Instance(nil), services...)
+	nw.Unlock()
 
-		for _, v := range services {
-			nw.next <- &registry.Result{Action: "create", Service: buildRegistryService(&v)}
-			return
-		}
-	} else {
-		for _, subscribeService := range services {
-			create := true
-			for _, cacheService := range nw.cacheServices[serviceName] {
-				if subscribeService.InstanceId == cacheService.InstanceId {
-					create = false
-					if !reflect.DeepEqual(subscribeService, cacheService) {
-						// update instance
-						nw.next <- &registry.Result{Action: "update", Service: buildRegistryService(&subscribeService)}
-						break
-					}
-				}
+	oldByID := make(map[string]model.Instance, len(old))
+	for _, v := range old {
+		oldByID[v.InstanceId] = v
+	}
+	for i := range services {
+		cur := &services[i]
+		prev, ok := oldByID[cur.InstanceId]
+		switch {
+		case !ok:
+			log.Info("[Nacos] create", zap.String("serviceName", cur.ServiceName), zap.String("ip", cur.Ip), zap.Uint64("port", cur.Port))
+			if !nw.send(&registry.Result{Action: "create", Service: buildRegistryService(cur)}) {
+				return
 			}
-			// new instance
-			if create {
-				log.Info("[Nacos] create", zap.String("serviceName", subscribeService.ServiceName), zap.Uint64("port", subscribeService.Port))
-
-				nw.next <- &registry.Result{Action: "create", Service: buildRegistryService(&subscribeService)}
-
-				nw.Lock()
-				nw.cacheServices[serviceName] = append(nw.cacheServices[serviceName], subscribeService)
-				nw.Unlock()
+		case !reflect.DeepEqual(prev, *cur):
+			if !nw.send(&registry.Result{Action: "update", Service: buildRegistryService(cur)}) {
 				return
 			}
 		}
-
-		for index, cacheService := range nw.cacheServices[serviceName] {
-			del := true
-			for _, subscribeService := range services {
-				if subscribeService.InstanceId == cacheService.InstanceId {
-					del = false
-				}
-			}
-			if del {
-				log.Info("[Nacos] del", zap.String("serviceName", cacheService.ServiceName), zap.Uint64("port", cacheService.Port))
-				nw.next <- &registry.Result{Action: "delete", Service: buildRegistryService(&cacheService)}
-
-				nw.Lock()
-				nw.cacheServices[serviceName][index] = model.Instance{}
-				nw.Unlock()
-
-			}
+		delete(oldByID, cur.InstanceId)
+	}
+	for _, v := range old {
+		if _, gone := oldByID[v.InstanceId]; !gone {
+			continue
 		}
+		log.Info("[Nacos] del", zap.String("serviceName", v.ServiceName), zap.String("ip", v.Ip), zap.Uint64("port", v.Port))
+		if !nw.send(&registry.Result{Action: "delete", Service: buildRegistryService(&v)}) {
+			return
+		}
+	}
+}
+
+// send 下发一条变更；watcher 已停止时返回 false
+func (nw *watcher) send(r *registry.Result) bool {
+	select {
+	case <-nw.exit:
+		return false
+	case nw.next <- r:
+		return true
 	}
 }
 

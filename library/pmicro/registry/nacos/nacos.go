@@ -85,20 +85,9 @@ func configure(n *nacosRegistry, opts ...registry.Option) error {
 		o(&n.opts)
 	}
 
-	// 默认客户端配置
-	clientConfig := constant.ClientConfig{
-		NotLoadCacheAtStart:  true,    // 启动时不加载缓存
-		UpdateCacheWhenEmpty: true,    // 缓存为空时更新缓存
-		LogLevel:             "debug", // 日志级别
-	}
+	clientConfig := clientConfigFrom(n.opts.Context)
 	serverConfigs := make([]constant.ServerConfig, 0)
 	contextPath := "/nacos"
-
-	// 从上下文中获取客户端配置
-	cfg, ok := n.opts.Context.Value(configKey{}).(constant.ClientConfig)
-	if ok {
-		clientConfig = cfg
-	}
 
 	// 获取nacos服务器地址
 	addrs, ok := n.opts.Context.Value(addressKey{}).([]string)
@@ -167,6 +156,27 @@ func configure(n *nacosRegistry, opts ...registry.Option) error {
 	n.Unlock()
 
 	return nil
+}
+
+// clientConfigFrom 取客户端配置：上下文里有 WithClientConfig 传入的配置就用它，否则用默认配置。
+//
+// 无论哪种来源都强制 NotLoadCacheAtStart=true。SDK 的 GetService 本地缓存命中就不问服务端，
+// 若启动时加载了上次运行留在 CacheDir 的服务列表，第一次调用会打到旧地址：
+// 容器原地重启后 IP 可能被别的容器占用（甚至是自己），表现为 Unimplemented / unknown service。
+// 启动时 Nacos 不可用本来就会 Fatal，加载磁盘缓存换不来可用性。
+// WithClientConfig 是整份替换，调用方只填账密时其余字段都是零值，所以不能依赖调用方设置。
+func clientConfigFrom(ctx context.Context) constant.ClientConfig {
+	clientConfig := constant.ClientConfig{
+		UpdateCacheWhenEmpty: true,    // 缓存为空时更新缓存
+		LogLevel:             "debug", // 日志级别
+	}
+	if ctx != nil {
+		if cfg, ok := ctx.Value(configKey{}).(constant.ClientConfig); ok {
+			clientConfig = cfg
+		}
+	}
+	clientConfig.NotLoadCacheAtStart = true
+	return clientConfig
 }
 
 // getNodeIPPort 从服务中提取节点的IP和端口

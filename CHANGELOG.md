@@ -10,6 +10,13 @@ Golang公共包，以及框架库。包含微服务gomicro、数据库mysql，re
    否则启动失败。
  - 建议同步在本次版本号上 bump major 号（如 v2.0.0），让下游能通过 go.mod 显式控制升级时点。
 
+## v1.1.1（待发布）
+
+### 修复
+
+- **registry(nacos)：启动时不再加载磁盘上的服务列表缓存**。`WithClientConfig` 是整份替换，框架只传账密和命名空间，默认配置里的 `NotLoadCacheAtStart: true` 被零值覆盖。SDK 启动时读入上次运行留在 `cache/naming` 的列表，`GetService` 本地命中就不问服务端，第一次调用会打到旧地址。容器原地重启后 IP 被别的容器占用（包括自己）时，表现为 `Unimplemented / unknown service XxxService`，订阅推送到达、selector 缓存（3 秒）过期后自愈。现在由 `clientConfigFrom` 统一强制 `NotLoadCacheAtStart=true`，调用方传入的其他字段不变。
+- **registry(nacos)：watcher 订阅回调按 InstanceId 全量比对**。原实现首次推送只下发第一个实例、出现新增后提前返回漏掉删除，推送空列表时按下标取服务名会 panic（`UpdateCacheWhenEmpty=true` 时实例全部下线即触发）。现在逐个下发 create / update / delete，空列表安全，watcher 停止后下发不再阻塞 SDK 推送协程。
+
 ## v1.1.0
 
 > 正式版，代码与 `v1.1.0-rc.16` 一致（`saas/feat-sync-ns-v2.5.6.0` @ `ed68bfc`）。
