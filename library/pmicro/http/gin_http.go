@@ -184,6 +184,10 @@ func ServiceReadiness(gctx *gin.Context) {
 	gctx.Status(http.StatusOK)
 }
 
+// corsAllowMethods 跨域预检放行的方法。缺了某个方法时，浏览器会在预检阶段直接拦掉该方法的跨域请求
+// （v1.1.1 及以前没有 PATCH，业务里的 PATCH 接口在跨域部署下全部失败）。UPDATE 不是标准方法，保留以兼容旧前端
+const corsAllowMethods = "POST, GET, OPTIONS, PUT, PATCH, DELETE, UPDATE"
+
 // Cors 处理跨域请求
 func Cors(headersList []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -191,7 +195,7 @@ func Cors(headersList []string) gin.HandlerFunc {
 		if origin != "" {
 			// 只设置一次 Access-Control-Allow-Origin
 			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+			c.Header("Access-Control-Allow-Methods", corsAllowMethods)
 			c.Header("Access-Control-Max-Age", "172800")
 			c.Header("Access-Control-Allow-Credentials", "true")
 

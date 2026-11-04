@@ -10,7 +10,14 @@ Golang公共包，以及框架库。包含微服务gomicro、数据库mysql，re
    否则启动失败。
  - 建议同步在本次版本号上 bump major 号（如 v2.0.0），让下游能通过 go.mod 显式控制升级时点。
 
-## v1.1.1（待发布）
+## v1.1.2
+
+### 修复
+
+- **http：跨域预检放行 PATCH**。`Cors` 写死的 `Access-Control-Allow-Methods` 只有 `POST, GET, OPTIONS, PUT, DELETE, UPDATE`，前后端跨域部署时浏览器在预检阶段就拦掉了所有 PATCH 请求（报错 `Method PATCH is not allowed by Access-Control-Allow-Methods in preflight response`）。现在补上 PATCH，其余方法与跨域头不变。
+- 升级后，业务里为绕过这个问题做的预检补丁（如 pg-admin-server 的 `middleware.PrependCorsPatch`）可以删除。注意预检响应带 `Access-Control-Max-Age: 172800`，浏览器会缓存旧的预检结果（Chrome 最多 2 小时），验证时关掉缓存。
+
+## v1.1.1
 
 ### 修复
 
